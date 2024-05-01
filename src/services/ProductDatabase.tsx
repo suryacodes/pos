@@ -30,7 +30,7 @@ class ProductDatabase extends Dexie {
 
   async getProducts(page: number = 1, limit: number = 10): Promise<Product[]> {
     const offset = (page - 1) * limit;
-    return this.products.toCollection().offset(offset).limit(limit).toArray();
+    return this.products.offset(offset).limit(limit).toArray();
   }
 
   getProduct(id: number): Promise<Product | undefined> {
