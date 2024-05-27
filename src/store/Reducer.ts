@@ -27,13 +27,6 @@ const productSlice = createSlice({
   name: "product",
   initialState,
   reducers: {
-    addProducts: (state: InitialState, action: PayloadAction<Product[]>) => {
-      return {
-        ...state,
-        products: action.payload,
-        isLoading: false,
-      };
-    },
     updateQuantityProducts: (
       state: InitialState,
       action: PayloadAction<{ productId: number; qty: number }>
@@ -54,20 +47,20 @@ const productSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchProductAysc.pending, (state: InitialState) => {
+      .addCase(fetchProductAsyc.pending, (state: InitialState) => {
         state.isLoading = true;
       })
       .addCase(
-        fetchProductAysc.fulfilled,
+        fetchProductAsyc.fulfilled,
         (state: InitialState, action: PayloadAction<ProductPage>) => {
-          state.products = action.payload.products;
+          state.products = [...state.products, ...action.payload.products];
           state.currentPage = action.payload.currentPage;
           state.totalPages = action.payload.totalPages;
           state.totalProducts = action.payload.totalProducts;
           state.isLoading = false;
         }
       )
-      .addCase(fetchProductAysc.rejected, (state: InitialState, action) => {
+      .addCase(fetchProductAsyc.rejected, (state: InitialState, action) => {
         const error = action.error;
         state.error = true;
         state.errorMessage = error.message;
@@ -76,7 +69,7 @@ const productSlice = createSlice({
   },
 });
 
-export const fetchProductAysc = createAsyncThunk(
+export const fetchProductAsyc = createAsyncThunk(
   "product/fetchProduct",
   async (page: number): Promise<ProductPage> => {
     const products = await ProductService.getProducts(page);
@@ -85,6 +78,6 @@ export const fetchProductAysc = createAsyncThunk(
   }
 );
 
-export const { addProducts, updateQuantityProducts } = productSlice.actions;
+export const { updateQuantityProducts } = productSlice.actions;
 
 export default productSlice;
